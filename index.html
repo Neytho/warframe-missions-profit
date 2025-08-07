@@ -3,49 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Warframe - Missions Rentables</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Warframe Missions Profit</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <h1>Missions Warframe avec le Meilleur Profit</h1>
+  <header>
+    <h1>Meilleures Missions Warframe (Profit en Platine)</h1>
+  </header>
 
-  <div id="filters">
-    <label>Planète :
+  <section class="filters">
+    <label>Planète:
       <select id="planetFilter">
         <option value="">Toutes</option>
       </select>
     </label>
 
-    <label>Durée max :
-      <input type="number" id="durationFilter" placeholder="en minutes" />
+    <label>Durée max (min):
+      <input type="number" id="durationFilter" placeholder="ex: 10"/>
     </label>
 
-    <label>Type de relique :
+    <label>Type de relique:
       <select id="relicFilter">
-        <option value="">Tous</option>
+        <option value="">Toutes</option>
         <option value="Lith">Lith</option>
         <option value="Meso">Meso</option>
         <option value="Neo">Neo</option>
         <option value="Axi">Axi</option>
       </select>
     </label>
-  </div>
+  </section>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Mission</th>
-        <th>Planète</th>
-        <th>Durée</th>
-        <th>Type de relique</th>
-        <th>Loot rare</th>
-        <th>Profit estimé (platine)</th>
-      </tr>
-    </thead>
-    <tbody id="missionsTable">
-      <!-- Contenu injecté par JS -->
-    </tbody>
-  </table>
+  <section>
+    <table>
+      <thead>
+        <tr>
+          <th>Mission</th>
+          <th>Planète</th>
+          <th>Durée</th>
+          <th>Relique</th>
+          <th>Loot Rare</th>
+          <th>Profit estimé</th>
+        </tr>
+      </thead>
+      <tbody id="missionsTable"></tbody>
+    </table>
+  </section>
+
+  <footer>
+    <p>Made for Tenno © 2025</p>
+  </footer>
 
   <script src="script.js"></script>
 </body>
