@@ -29,7 +29,7 @@ const missions = [
     duration: 15,
     relic: "Axi",
     rareLoot: "Soma Prime Stock",
-    profit: NaN
+    profit: null
   }
 ];
 
