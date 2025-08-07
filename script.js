@@ -29,7 +29,39 @@ const missions = [
     duration: 15,
     relic: "Axi",
     rareLoot: "Soma Prime Stock",
-    profit: null
+    profit: 52.0
+  },
+  {
+    name: "Excavation Neo",
+    planet: "Europa",
+    duration: 8,
+    relic: "Neo",
+    rareLoot: "Carrier Prime BP",
+    profit: 29.4
+  },
+  {
+    name: "Espionnage Lith",
+    planet: "Mercury",
+    duration: 6,
+    relic: "Lith",
+    rareLoot: "Boar Prime Receiver",
+    profit: 16.8
+  },
+  {
+    name: "Defense Meso",
+    planet: "Ceres",
+    duration: 10,
+    relic: "Meso",
+    rareLoot: "Orthos Prime Blade",
+    profit: 33.0
+  },
+  {
+    name: "Interception Axi",
+    planet: "Sedna",
+    duration: 14,
+    relic: "Axi",
+    rareLoot: "Nekros Prime Systems",
+    profit: 48.5
   }
 ];
 
