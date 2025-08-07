@@ -1,168 +1,52 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Warframe - Meilleures Missions Rentables</title>
-  <style>
-    body {
-      background-color: #0f0f1a;
-      color: #ffffff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding: 20px;
-    }
-    h1 {
-      color: #8f5fff;
-      text-align: center;
-    }
-    .filters {
-      margin: 20px 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
-    select {
-      padding: 8px;
-      border-radius: 5px;
-      background-color: #1e1e2f;
-      color: white;
-      border: 1px solid #8f5fff;
-    }
-    .mission {
-      background-color: #1e1e2f;
-      border: 1px solid #8f5fff;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-      box-shadow: 0 0 10px rgba(143, 95, 255, 0.5);
-    }
-    .profit {
-      color: #57f287;
-      font-weight: bold;
-    }
-    .rare-drops {
-      color: #ffa500;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Warframe - Missions Rentables</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>🔍 Missions les plus rentables (Warframe)</h1>
+  <h1>Missions Warframe avec le Meilleur Profit</h1>
 
-  <div class="filters">
-    <select id="planetFilter">
-      <option value="">🌍 Filtrer par planète</option>
-    </select>
-    <select id="tierFilter">
-      <option value="">💎 Filtrer par type de relique</option>
-      <option value="Lith">Lith</option>
-      <option value="Meso">Meso</option>
-      <option value="Neo">Neo</option>
-      <option value="Axi">Axi</option>
-    </select>
+  <div id="filters">
+    <label>Planète :
+      <select id="planetFilter">
+        <option value="">Toutes</option>
+      </select>
+    </label>
+
+    <label>Durée max :
+      <input type="number" id="durationFilter" placeholder="en minutes" />
+    </label>
+
+    <label>Type de relique :
+      <select id="relicFilter">
+        <option value="">Tous</option>
+        <option value="Lith">Lith</option>
+        <option value="Meso">Meso</option>
+        <option value="Neo">Neo</option>
+        <option value="Axi">Axi</option>
+      </select>
+    </label>
   </div>
 
-  <div id="missions"></div>
+  <table>
+    <thead>
+      <tr>
+        <th>Mission</th>
+        <th>Planète</th>
+        <th>Durée</th>
+        <th>Type de relique</th>
+        <th>Loot rare</th>
+        <th>Profit estimé (platine)</th>
+      </tr>
+    </thead>
+    <tbody id="missionsTable">
+      <!-- Contenu injecté par JS -->
+    </tbody>
+  </table>
 
-  <script>
-    let allFissures = [];
-
-    async function fetchMissions() {
-      const fissuresUrl = 'https://api.warframestat.us/pc/fissures';
-
-      const fissureRes = await fetch(fissuresUrl);
-      const fissures = await fissureRes.json();
-
-      const filtered = fissures.filter(f => ['Lith', 'Meso', 'Neo', 'Axi'].includes(f.tier));
-      allFissures = filtered;
-      updateFilters();
-      renderMissions();
-    }
-
-    function updateFilters() {
-      const planetSelect = document.getElementById("planetFilter");
-      const planets = [...new Set(allFissures.map(f => f.node.split("/")[0].trim()))];
-      planetSelect.innerHTML = '<option value="">🌍 Filtrer par planète</option>' + planets.map(p => `<option value="${p}">${p}</option>`).join('');
-    }
-
-    async function renderMissions() {
-      const container = document.getElementById("missions");
-      container.innerHTML = '';
-      const planet = document.getElementById("planetFilter").value;
-      const tier = document.getElementById("tierFilter").value;
-
-      let displayList = allFissures;
-
-      if (planet) {
-        displayList = displayList.filter(f => f.node.includes(planet));
-      }
-      if (tier) {
-        displayList = displayList.filter(f => f.tier === tier);
-      }
-
-      for (let fissure of displayList) {
-        const estimatedProfit = await fetchMarketPrices(fissure.tier);
-        const rareLoots = await fetchRareLoots(fissure.tier);
-        const div = document.createElement('div');
-        div.className = 'mission';
-        div.innerHTML = `
-          <h3>${fissure.tier} - ${fissure.missionType}</h3>
-          <p><strong>Planète :</strong> ${fissure.node}</p>
-          <p><strong>Faction :</strong> ${fissure.enemy}</p>
-          <p><strong>Temps restant :</strong> ${fissure.eta}</p>
-          <p><strong>Profit moyen (estimé) :</strong> <span class="profit">${estimatedProfit} platines</span></p>
-          <p><strong>Loot rare possible :</strong> <span class="rare-drops">${rareLoots}</span></p>
-        `;
-        container.appendChild(div);
-      }
-    }
-
-    async function fetchMarketPrices(tier) {
-      const relics = {
-        Lith: ['lith_a1', 'lith_b4', 'lith_c3'],
-        Meso: ['meso_b4', 'meso_d5', 'meso_e2'],
-        Neo: ['neo_n13', 'neo_k5', 'neo_l1'],
-        Axi: ['axi_a16', 'axi_r4', 'axi_s8']
-      };
-
-      const chosen = relics[tier] || [];
-      let total = 0;
-      let count = 0;
-
-      for (let relic of chosen) {
-        try {
-          const url = `https://api.warframe.market/v1/items/${relic}/statistics`;
-          const res = await fetch(url);
-          const json = await res.json();
-          const stats = json.payload.statistics_closed["48hours"];
-          if (stats && stats.length > 0) {
-            const avg = stats[stats.length - 1].avg_price;
-            total += avg;
-            count++;
-          }
-        } catch (err) {
-          console.log("Erreur de récupération pour", relic, err);
-        }
-      }
-
-      return count > 0 ? (total / count).toFixed(1) : 'N/A';
-    }
-
-    async function fetchRareLoots(tier) {
-      const lootMock = {
-        Lith: ['Paris Prime String', 'Bronco Prime Receiver'],
-        Meso: ['Lex Prime Barrel', 'Braton Prime Receiver'],
-        Neo: ['Aklex Prime Blueprint', 'Forma Blueprint'],
-        Axi: ['Rhino Prime Systems', 'Nyx Prime Chassis']
-      };
-      return lootMock[tier]?.join(', ') || 'Données non disponibles';
-    }
-
-    document.getElementById("planetFilter").addEventListener("change", renderMissions);
-    document.getElementById("tierFilter").addEventListener("change", renderMissions);
-
-    fetchMissions();
-    setInterval(fetchMissions, 300000);
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
